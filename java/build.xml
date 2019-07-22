@@ -16,7 +16,7 @@
 
 	<property name="source.home"    value="${basedir}/src"/>
 	<property name="example.home"   value="${basedir}/examples"/>
-	<property name="grapheditor.home" value="${basedir}/../javascript/examples/grapheditor/java/src"/>
+	<property name="CBAS.home" 		value="${basedir}/../javascript/examples/grapheditor/java/src"/>
 	<property name="test.home"      value="${basedir}/test"/>
 
 <!-- ==================== Compilation Options ==================== -->
@@ -142,7 +142,7 @@
 			optimize="${compile.optimize}"
 			destdir="${basedir}/example-classes">
 			<src path="${example.home}"/>
-			<src path="${grapheditor.home}"/>
+			<src path="${CBAS.home}"/>
 			<classpath>
 				<pathelement path="${basedir}/classes"/>
 				<pathelement path="${basedir}/example-classes"/>
@@ -174,10 +174,11 @@
 		</java>
 	</target>
 
-<!-- ==================== grapheditor ==================== -->
+
+<!-- ==================== CBASGraphics ==================== -->
 	
-	<target name="grapheditor" depends="compile-examples" description="Runs the grapheditor example">
-		<java classname="com.mxgraph.examples.web.GraphEditor" dir="${basedir}/.." fork="true">
+	<target name="CBAS Graphics" depends="compile-examples" description="Ayyy this is custom ">
+		<java classname="com.mxgraph.examples.web.CBASGraph" dir="${basedir}/../../" fork="true">
 			<classpath>
 				<pathelement path="${basedir}/classes"/>
 				<pathelement path="${basedir}/example-classes"/>
@@ -188,5 +189,4 @@
 			</classpath>
 		</java>
 	</target>
-
 </project>

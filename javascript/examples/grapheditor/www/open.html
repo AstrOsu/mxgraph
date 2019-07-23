@@ -40,7 +40,7 @@
 		
 		// Checks for support of the File API for local file access
 		// except for files where the parse is on the server
-		if (!window.parent.Graph.fileSupport && form.upfile.files.length > 0)
+		if (window.parent.Graph.fileSupport && form.upfile.files.length > 0)
 		{
 			handleFiles(form.upfile.files);
 			

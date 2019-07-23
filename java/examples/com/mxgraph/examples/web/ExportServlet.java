@@ -42,7 +42,7 @@ public class ExportServlet extends HttpServlet
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 444696969202020L;
+	private static final long serialVersionUID = -5040708166131034515L;
 
 	/**
 	 * 

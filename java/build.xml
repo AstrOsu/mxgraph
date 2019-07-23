@@ -61,6 +61,11 @@
 				<pathelement path="${basedir}/classes"/>
 			</classpath>
 		</javac>
+		<copy todir="${basedir}/classes">
+		  <fileset dir="${source.home}">
+		    <exclude name="**/*.java"/>
+		  </fileset>
+		</copy>
 	</target>
 
 <!-- ==================== Doc ==================== -->

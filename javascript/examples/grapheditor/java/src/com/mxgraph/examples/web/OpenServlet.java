@@ -51,9 +51,6 @@ public class OpenServlet extends HttpServlet
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException
 	{
-		System.out.println(request.getRequestURL().toString());
-		System.out.println(request.getQueryString());
-		
 		request.setCharacterEncoding("UTF-8");
 		response.setCharacterEncoding("UTF-8");
 		response.setContentType("text/html; charset=UTF-8");
@@ -85,7 +82,8 @@ public class OpenServlet extends HttpServlet
 				String filename = post.get("filename");
 
 				// Uses JavaScript to load the XML on the client-side
-				writer.println("window.parent.openFile.setData(decodeURIComponent('" + encodeURIComponent(xml) + "'), '" + filename + "');");
+				writer.println("window.parent.openFile.setData(decodeURIComponent('"
+						+ encodeURIComponent(xml) + "'), '" + filename + "');");
 			}
 			else
 			{

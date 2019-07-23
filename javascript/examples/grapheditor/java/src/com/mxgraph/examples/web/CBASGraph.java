@@ -20,7 +20,7 @@ import org.apache.commons.io.IOUtils;
 public class CBASGraph
 {
 
-	public static int PORT = 8082;
+	public static int PORT = 8085;
 
 	/**
 	 * Uncomment this for better font size rendering in px units within labels.

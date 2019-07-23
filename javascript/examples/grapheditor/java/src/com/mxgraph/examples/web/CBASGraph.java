@@ -6,6 +6,7 @@ import org.mortbay.jetty.handler.HandlerList;
 import org.mortbay.jetty.handler.ResourceHandler;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
+import org.apache.commons.io.IOUtils;
 
 /**
  * The save servlet is used to echo XML to the client, eg. for SVG export and saving
@@ -19,7 +20,7 @@ import org.mortbay.jetty.servlet.ServletHolder;
 public class CBASGraph
 {
 
-	public static int PORT = 8080;
+	public static int PORT = 8082;
 
 	/**
 	 * Uncomment this for better font size rendering in px units within labels.
@@ -35,6 +36,7 @@ public class CBASGraph
 	 */
 	public static void main(String[] args) throws Exception
 	{
+		System.out.println(IOUtils.EOF);
 		Server server = new Server(PORT);
 
 		// Servlets
@@ -42,6 +44,7 @@ public class CBASGraph
 		context.addServlet(new ServletHolder(new EchoServlet()), "/save");
 		context.addServlet(new ServletHolder(new ExportServlet()), "/export");
 		context.addServlet(new ServletHolder(new OpenServlet()), "/open");
+		context.addServlet(new ServletHolder(new OpenAs()), "/fancyOpen");
 
 		System.out.println("\nWorking Directory = " + System.getProperty("user.dir"));
 		ResourceHandler fileHandler = new ResourceHandler();

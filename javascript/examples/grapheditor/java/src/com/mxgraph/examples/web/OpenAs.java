@@ -1,6 +1,3 @@
-/**
- * Copyright (c) 2011-2012, JGraph Ltd
- */
 package com.mxgraph.examples.web;
 
 import java.io.BufferedReader;
@@ -23,7 +20,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
+import org.apache.commons.io.*;
 /**
  * Servlet implementation class OpenServlet.
  * 
@@ -37,13 +34,13 @@ import javax.servlet.http.HttpServletResponse;
  * OpenFile instance of the parent window of the frame where open.html was
  * displayed (see below).
  */
-public class OpenServlet extends HttpServlet
+public class OpenAs extends HttpServlet
 {
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -4442397463551836919L;
+	private static final long serialVersionUID = 444696969202020L;
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
@@ -51,13 +48,13 @@ public class OpenServlet extends HttpServlet
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException
 	{
-		System.out.println(request.getRequestURL().toString());
-		System.out.println(request.getQueryString());
+
+		//printCopy(request);
 		
 		request.setCharacterEncoding("UTF-8");
 		response.setCharacterEncoding("UTF-8");
 		response.setContentType("text/html; charset=UTF-8");
-
+		
 		OutputStream out = response.getOutputStream();
 		String encoding = request.getHeader("Accept-Encoding");
 
@@ -73,15 +70,14 @@ public class OpenServlet extends HttpServlet
 		writer.println("<head>");
 		writer.println("</head>");
 		writer.println("<body>");
-		writer.println("<script type=\"text/javascript\">");
+		writer.println("<p>");
 
 		try
 		{
 			if (request.getContentLength() < Constants.MAX_REQUEST_SIZE)
 			{
 				Map<String, String> post = parseMultipartRequest(request);
-				String xml = new String(post.get("upfile").getBytes(ENCODING),
-						"UTF-8");
+				String xml = new String(post.get("upfile").getBytes(ENCODING),"UTF-8");
 				String filename = post.get("filename");
 
 				// Uses JavaScript to load the XML on the client-side
@@ -95,14 +91,27 @@ public class OpenServlet extends HttpServlet
 		catch (Exception e)
 		{
 			error(writer, "invalidOrMissingFile");
+			System.out.println(e);
 		}
 
-		writer.println("</script>");
+		writer.println("</p>");
 		writer.println("</body>");
 		writer.println("</html>");
 
 		writer.flush();
 		writer.close();
+	}
+	
+	public void printCopy(HttpServletRequest request)
+	{
+		try {
+			
+			System.out.println(IOUtils.toString(request.getInputStream()));
+		}
+		catch(Exception e)
+		{
+			System.out.println(e);
+		}
 	}
 
 	public static void error(PrintWriter w, String key)

@@ -1,6 +1,7 @@
 package com.mxgraph.examples.web;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -8,6 +9,10 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.io.FileOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.nio.file.*;
 import java.net.URLEncoder;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -15,12 +20,24 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPOutputStream;
+import java.util.Random;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.awt.image.BufferedImage;
+import java.awt.Color;
 import org.apache.commons.io.*;
+import org.w3c.dom.*;
+
+import com.mxgraph.util.*;
+import com.mxgraph.util.png.*;
+import com.mxgraph.view.*;
+import com.mxgraph.swing.*;
+import com.mxgraph.io.*;
+
+
 /**
  * Servlet implementation class OpenServlet.
  * 
@@ -45,8 +62,7 @@ public class OpenAs extends HttpServlet
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
-	protected void doPost(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
 
 		//printCopy(request);
@@ -70,7 +86,7 @@ public class OpenAs extends HttpServlet
 		writer.println("<head>");
 		writer.println("</head>");
 		writer.println("<body>");
-		writer.println("<p>");
+		//writer.println("<p>");
 
 		try
 		{
@@ -79,9 +95,19 @@ public class OpenAs extends HttpServlet
 				Map<String, String> post = parseMultipartRequest(request);
 				String xml = new String(post.get("upfile").getBytes(ENCODING),"UTF-8");
 				String filename = post.get("filename");
-
+				System.out.println(filename);
+				System.out.println(xml);
+				XmlProcessor xp = new XmlProcessor(xml, filename);
+				System.out.println("starting...");
+				xp.parseXml();
+				System.out.println("ok done");
+				
+				String uri = mxBase64.encodeToString(xp.imgbuf, false);
+				
+				writer.println("<img src=\"data:image/png;base64," + uri + "\"/>");
+				
 				// Uses JavaScript to load the XML on the client-side
-				writer.println("window.parent.openFile.setData(decodeURIComponent('" + encodeURIComponent(xml) + "'), '" + filename + "');");
+				//writer.println("window.parent.openFile.setData(decodeURIComponent('" + encodeURIComponent(xml) + "'), '" + filename + "');");
 			}
 			else
 			{
@@ -91,15 +117,94 @@ public class OpenAs extends HttpServlet
 		catch (Exception e)
 		{
 			error(writer, "invalidOrMissingFile");
-			System.out.println(e);
+			//System.out.println(e);
+			e.printStackTrace();
 		}
 
-		writer.println("</p>");
+		//writer.println("</p>");
 		writer.println("</body>");
 		writer.println("</html>");
 
 		writer.flush();
 		writer.close();
+	}
+	
+	public class XmlProcessor
+	{
+		public Document svg, html, xmlDoc;
+		public BufferedImage img;
+		public byte[] imgbuf;
+		public String fname, xml;
+		
+		public XmlProcessor(String xml, String fileName)
+		{
+			this.xml = xml;
+			fname = System.getProperty("user.dir") + File.separator + fileName;
+			xmlDoc = mxXmlUtils.parseXml(xml);
+			
+			
+			System.out.println("\nFile = " + fname);
+		}
+	
+	
+		public void parseXml()
+		{				
+			int count = 0;
+			mxGraph g = new mxGraph();
+		System.out.println(count++);
+			mxCodec codec = new mxCodec(xmlDoc);
+		System.out.println(count++);
+		    codec.decode(xmlDoc.getDocumentElement(), g.getModel());
+		    mxGraphComponent graphComponent = new mxGraphComponent(g);
+		    
+		    if(graphComponent == null)
+		    	System.out.println("hm");
+		    else if (graphComponent.getGraph() == null)
+		    	System.out.println("pt 2 not working");		    	
+		    else
+		    	System.out.println("working");
+		    
+
+		    
+		    
+	    System.out.println(count++);
+		    img = mxCellRenderer.createBufferedImage(graphComponent.getGraph(), null, 1, Color.WHITE, graphComponent.isAntiAlias(), null, graphComponent.getCanvas());
+	    System.out.println(count++);
+		    svg = mxCellRenderer.createSvgDocument(graphComponent.getGraph(), null, 1, Color.WHITE, null);
+	    System.out.println(count++);
+		    html = mxCellRenderer.createHtmlDocument(graphComponent.getGraph(), null, 1, Color.WHITE, null); 
+		    
+	    System.out.println(count++);
+   
+		    mxPngEncodeParam param = mxPngEncodeParam.getDefaultEncodeParam(img);
+		    param.setCompressedText(new String[] { "mxGraphModel", xml });
+		    
+		    try 
+		    { 
+		    	//File f = new File(fname + ".png");
+		    	//FileOutputStream imgStream = new FileOutputStream(f);
+		    	
+		    	ByteArrayOutputStream imgStream = new ByteArrayOutputStream();
+		    	mxPngImageEncoder encoder = new mxPngImageEncoder(imgStream, param);
+	
+
+			    if (img != null) 
+			    {
+			        encoder.encode(img);
+			    }
+			    
+			    System.out.println(mxXmlUtils.getXml(svg));
+			    System.out.println(mxXmlUtils.getXml(html));
+			    
+		    	imgbuf = imgStream.toByteArray();
+			    imgStream.close();
+		    }
+		    catch(Exception e)
+		    {
+		    	System.out.println("\n" + e);
+		    }
+		    
+		}
 	}
 	
 	public void printCopy(HttpServletRequest request)

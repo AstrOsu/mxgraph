@@ -200,7 +200,7 @@ Sidebar.prototype.sidebarTitleSize = 9;
 /**
  * Specifies if titles in the sidebar should be enabled.
  */
-Sidebar.prototype.sidebarTitles = false;
+Sidebar.prototype.sidebarTitles = true;
 
 /**
  * Specifies if titles in the tooltips should be enabled.

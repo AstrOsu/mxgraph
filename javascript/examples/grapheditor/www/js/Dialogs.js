@@ -932,7 +932,7 @@ EditDiagramDialog.showNewWindowOption = true;
 /**
  * Constructs a new export dialog.
  */
-var ExportDialog = function(editorUi)
+var ExportDialog = function(editorUi, isFancy)
 {
 	var graph = editorUi.editor.graph;
 	var bounds = graph.getGraphBounds();
@@ -1267,7 +1267,7 @@ var ExportDialog = function(editorUi)
 			}
 			
 			ExportDialog.lastBorderValue = b;
-			ExportDialog.exportFile(editorUi, name, format, bg, s, b);
+			ExportDialog.exportFile(editorUi, name, format, bg, s, b, isFancy);
 		}
 	}));
 	saveBtn.className = 'geBtn gePrimaryBtn';
@@ -1317,6 +1317,11 @@ ExportDialog.showXmlOption = true;
  * key=value, where value should be URL encoded.
  */
 ExportDialog.exportFile = function(editorUi, name, format, bg, s, b)
+{
+	return ExportDialog.exportFile = function(editorUi, name, format, bg, s, b, false);
+}
+
+ExportDialog.exportFile = function(editorUi, name, format, bg, s, b, isFancy)
 {
 	var graph = editorUi.editor.graph;
 	

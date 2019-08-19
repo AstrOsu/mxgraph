@@ -16489,6 +16489,8 @@ mxImageExport.prototype.getLinkForCellState = function(state, canvas)
  */
 mxImageExport.prototype.drawCellState = function(state, canvas)
 {
+    console.log(state);
+
 	// Experimental feature
 	var link = this.getLinkForCellState(state, canvas);
 	
@@ -16499,8 +16501,21 @@ mxImageExport.prototype.drawCellState = function(state, canvas)
 	
 	// Paints the shape and text
 	this.drawShape(state, canvas);
-	this.drawText(state, canvas);
+    console.log(state.cell);
 
+    if ( (state.cell.value !== undefined) && (typeof state.cell.value !== "string"))
+    {
+        console.log(state.cell.hasAttribute('dataField'))
+    
+        if(state.cell.hasAttribute('dataField'))
+        {                  
+            canvas.root.lastElementChild.setAttribute('data-field', state.cell.getAttribute('dataField'));
+        }
+    }
+    
+	this.drawText(state, canvas);
+    //console.log(canvas);
+    
 	if (link != null)
 	{
 		canvas.setLink(null);

@@ -109,6 +109,7 @@ exitGroup=Exit Group
 expand=Expand
 export=Export
 extras=Extras
+fancyExport=Fancy Export
 file=File
 fileNotFound=File not found
 filename=Filename

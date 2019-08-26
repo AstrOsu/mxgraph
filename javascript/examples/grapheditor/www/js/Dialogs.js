@@ -977,29 +977,32 @@ var ExportDialog = function(editorUi, isFancy)
 	var imageFormatSelect = document.createElement('select');
 	imageFormatSelect.style.width = '180px';
 
-	var pngOption = document.createElement('option');
-	pngOption.setAttribute('value', 'png');
-	mxUtils.write(pngOption, mxResources.get('formatPng'));
-	imageFormatSelect.appendChild(pngOption);
-
-	var gifOption = document.createElement('option');
-	
-	if (ExportDialog.showGifOption)
+	if(!isFancy)
 	{
-		gifOption.setAttribute('value', 'gif');
-		mxUtils.write(gifOption, mxResources.get('formatGif'));
-		imageFormatSelect.appendChild(gifOption);
-	}
-	
-	var jpgOption = document.createElement('option');
-	jpgOption.setAttribute('value', 'jpg');
-	mxUtils.write(jpgOption, mxResources.get('formatJpg'));
-	imageFormatSelect.appendChild(jpgOption);
+		var pngOption = document.createElement('option');
+		pngOption.setAttribute('value', 'png');
+		mxUtils.write(pngOption, mxResources.get('formatPng'));
+		imageFormatSelect.appendChild(pngOption);
 
-	var pdfOption = document.createElement('option');
-	pdfOption.setAttribute('value', 'pdf');
-	mxUtils.write(pdfOption, mxResources.get('formatPdf'));
-	imageFormatSelect.appendChild(pdfOption);
+		var gifOption = document.createElement('option');
+		
+		if (ExportDialog.showGifOption)
+		{
+			gifOption.setAttribute('value', 'gif');
+			mxUtils.write(gifOption, mxResources.get('formatGif'));
+			imageFormatSelect.appendChild(gifOption);
+		}
+	
+		var jpgOption = document.createElement('option');
+		jpgOption.setAttribute('value', 'jpg');
+		mxUtils.write(jpgOption, mxResources.get('formatJpg'));
+		imageFormatSelect.appendChild(jpgOption);
+
+		var pdfOption = document.createElement('option');
+		pdfOption.setAttribute('value', 'pdf');
+		mxUtils.write(pdfOption, mxResources.get('formatPdf'));
+		imageFormatSelect.appendChild(pdfOption);
+	}
 	
 	var svgOption = document.createElement('option');
 	svgOption.setAttribute('value', 'svg');
@@ -1243,7 +1246,7 @@ var ExportDialog = function(editorUi, isFancy)
 	td.style.paddingTop = '22px';
 	td.colSpan = 2;
 	
-	var saveBtn = mxUtils.button(mxResources.get('export'), mxUtils.bind(this, function()
+	var saveBtn = mxUtils.button(isFancy ? mxResources.get('fancyExport') : mxResources.get('export'), mxUtils.bind(this, function()
 	{
 		if (parseInt(zoomInput.value) <= 0)
 		{
@@ -1316,10 +1319,10 @@ ExportDialog.showXmlOption = true;
  * parameter and value to be used in the request in the form
  * key=value, where value should be URL encoded.
  */
-ExportDialog.exportFile = function(editorUi, name, format, bg, s, b)
-{
-	return ExportDialog.exportFile = function(editorUi, name, format, bg, s, b, false);
-}
+//ExportDialog.exportFile = function(editorUi, name, format, bg, s, b)
+//{
+//	return ExportDialog.exportFile = function(editorUi, name, format, bg, s, b, false);
+//}
 
 ExportDialog.exportFile = function(editorUi, name, format, bg, s, b, isFancy)
 {
@@ -1331,7 +1334,12 @@ ExportDialog.exportFile = function(editorUi, name, format, bg, s, b, isFancy)
 	}
     else if (format == 'svg')
 	{
-		ExportDialog.saveLocalFile(editorUi, mxUtils.getXml(graph.getSvg(bg, s, b)), name, format);
+		//console.log(graph.getSvg)
+		//console.log(graph.getSvg(bg, s, b));
+		//console.log(typeof graph.getSvg(bg, s, b));
+		//console.log(mxUtils.getXml(graph.getSvg(bg, s, b)));
+
+		ExportDialog.saveLocalFile(editorUi, mxUtils.getXml(graph.getSvg(bg, s, b)), name, format, isFancy);
 	}
     else
     {
@@ -1379,14 +1387,30 @@ ExportDialog.exportFile = function(editorUi, name, format, bg, s, b, isFancy)
  * parameter and value to be used in the request in the form
  * key=value, where value should be URL encoded.
  */
-ExportDialog.saveLocalFile = function(editorUi, data, filename, format)
+ExportDialog.saveLocalFile = function(editorUi, data, filename, format, isFancy)
 {
 	if (data.length < MAX_REQUEST_SIZE)
 	{
 		editorUi.hideDialog();
-		var req = new mxXmlRequest(SAVE_URL, 'xml=' + encodeURIComponent(data) + '&filename=' +
-			encodeURIComponent(filename) + '&format=' + format);
-		req.simulate(document, '_blank');
+		if(isFancy)
+		{
+			console.log(typeof data);
+			var blob = new Blob([data], { type: 'text/xml' });
+			var anchor = document.createElement('a');
+
+			anchor.download = "hello.xml";
+			anchor.href = (window.webkitURL || window.URL).createObjectURL(blob);
+			anchor.dataset.downloadurl = ['text/xml', anchor.download, anchor.href].join(':');
+			anchor.click();
+			//localStorage[filename] = data;
+			//localStorage[filename+ 'htmlrequest'] = SAVE_URL + 'xml=' + encodeURIComponent(data) + '&filename=' +	encodeURIComponent(filename) + '&format=' + format;
+		}
+		else
+		{
+			var req = new mxXmlRequest(SAVE_URL, 'xml=' + encodeURIComponent(data) + '&filename=' +
+				encodeURIComponent(filename) + '&format=' + format);
+			req.simulate(document, '_blank');
+		}
 	}
 	else
 	{

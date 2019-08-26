@@ -16423,7 +16423,7 @@ function mxImageExport() { };
  * 
  * Specifies if overlays should be included in the export. Default is false.
  */
-mxImageExport.prototype.includeOverlays = false;
+mxImageExport.prototype.includeOverlays = true;
 
 /**
  * Function: drawState
@@ -16489,11 +16489,14 @@ mxImageExport.prototype.getLinkForCellState = function(state, canvas)
  */
 mxImageExport.prototype.drawCellState = function(state, canvas)
 {
-    console.log(state);
-
+	
+	console.trace()
+    //console.log(state);
+    //console.log(canvas);
 	// Experimental feature
 	var link = this.getLinkForCellState(state, canvas);
 	
+    //console.log(link);
 	if (link != null)
 	{
 		canvas.setLink(link);
@@ -16501,16 +16504,30 @@ mxImageExport.prototype.drawCellState = function(state, canvas)
 	
 	// Paints the shape and text
 	this.drawShape(state, canvas);
-    console.log(state.cell);
-
+    //console.log(state.cell);
+    //console.log(canvas.root);
     if ( (state.cell.value !== undefined) && (typeof state.cell.value !== "string"))
     {
-        console.log(state.cell.hasAttribute('dataField'))
-    
-        if(state.cell.hasAttribute('dataField'))
-        {                  
-            canvas.root.lastElementChild.setAttribute('data-field', state.cell.getAttribute('dataField'));
+        var object = state.cell.getValue();
+        console.log(object.attributes);
+        
+        var len = object.attributes.length;
+        
+        for(var i = 1; i < len; i++)
+        {
+            var attrib = object.attributes.item(i);
+            //console.log(attrib);
+            
+            //console.log(attrib.value);
+            //console.log(attrib.name);
+            
+            canvas.root.lastElementChild.setAttribute('data-' + attrib.name, attrib.value);
         }
+    
+        //if(state.cell.hasAttribute('dataField'))
+        //{                  
+        //    canvas.root.lastElementChild.setAttribute('data-field', state.cell.getAttribute('dataField'));
+        //}
     }
     
 	this.drawText(state, canvas);
@@ -16532,6 +16549,7 @@ mxImageExport.prototype.drawShape = function(state, canvas)
 	if (state.shape instanceof mxShape && state.shape.checkBounds())
 	{
 		canvas.save();
+        //console.log(state.shape.paint);
 		state.shape.paint(canvas);
 		canvas.restore();
 	}
@@ -16547,6 +16565,7 @@ mxImageExport.prototype.drawText = function(state, canvas)
 	if (state.text != null && state.text.checkBounds())
 	{
 		canvas.save();
+        //console.log(state.text.paint);
 		state.text.paint(canvas);
 		canvas.restore();
 	}

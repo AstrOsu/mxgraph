@@ -16490,7 +16490,6 @@ mxImageExport.prototype.getLinkForCellState = function(state, canvas)
 mxImageExport.prototype.drawCellState = function(state, canvas)
 {
 	
-	console.trace()
     //console.log(state);
     //console.log(canvas);
 	// Experimental feature
@@ -16509,7 +16508,7 @@ mxImageExport.prototype.drawCellState = function(state, canvas)
     if ( (state.cell.value !== undefined) && (typeof state.cell.value !== "string"))
     {
         var object = state.cell.getValue();
-        console.log(object.attributes);
+        console.log(object);
         
         var len = object.attributes.length;
         
@@ -16520,8 +16519,10 @@ mxImageExport.prototype.drawCellState = function(state, canvas)
             
             //console.log(attrib.value);
             //console.log(attrib.name);
-            
-            canvas.root.lastElementChild.setAttribute('data-' + attrib.name, attrib.value);
+            if(canvas.root.lastElementChild == null)
+				console.log(canvas.root)
+			else
+				canvas.root.lastElementChild.setAttribute('data-' + attrib.name, attrib.value);
         }
     
         //if(state.cell.hasAttribute('dataField'))
